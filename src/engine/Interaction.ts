@@ -152,6 +152,7 @@ export class Interaction {
     this.canvas.removeEventListener('mousemove', this.onMouseMove);
     this.canvas.removeEventListener('click', this.onClick);
     window.removeEventListener('keydown', this.onKeyDown);
+    this.transform.dispose();
   }
 }
 

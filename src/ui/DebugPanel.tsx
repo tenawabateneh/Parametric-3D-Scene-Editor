@@ -177,6 +177,13 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({ engineRef }) => {
     }
   };
 
+  const handleExport = () => {
+    const e = engineRef.current;
+    if (!e) return;
+    const state = e.exportState();
+    downloadJSON(state, `scene-export-${Date.now()}.json`);
+  };
+
   return (
     <div
       style={{
@@ -214,6 +221,9 @@ export const DebugPanel: React.FC<DebugPanelProps> = ({ engineRef }) => {
           </button>
           <button onClick={downloadLastReport} style={{ padding: '4px 6px' }}>
             Download Results
+          </button>
+          <button onClick={handleExport} style={{ padding: '4px 6px' }}>
+            Export JSON
           </button>
           <button onClick={runClearTest} style={{ padding: '4px 6px' }}>
             Run Clear Test
