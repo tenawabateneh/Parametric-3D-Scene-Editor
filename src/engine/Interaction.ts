@@ -14,6 +14,8 @@ export class Interaction {
 
   private hoveredObject: THREE.Group | null = null;
   private selectedObject: THREE.Group | null = null;
+  private _rotationMode: boolean = false;
+  private _scaleMode: boolean = false;
 
   public onObjectSelected: (data: { id: string; type: string; position: number[] } | null) => void = () => { };
 
@@ -66,13 +68,76 @@ export class Interaction {
   };
 
   private onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Delete' || event.key === 'Backspace') {
-      if (this.selectedObject) {
-        const id = this.selectedObject.userData.id;
-        this.selectObject(null);
-        this.sceneManager.removeObject(id);
+    if (!this.selectedObject) return;
 
+    // Delete selected object
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      const id = this.selectedObject.userData.id;
+      this.selectObject(null);
+      this.sceneManager.removeObject(id);
+      return;
+    }
+
+    const moveStep = 0.1;
+    const rotateStep = Math.PI / 4; // 45 degrees
+
+    // Enable rotation mode when 'r' is pressed
+    if (event.key === 'r') {
+      this._rotationMode = true;
+      return;
+    }
+    // Enable scale mode when 's' is pressed
+    if (event.key === 's') {
+      this._scaleMode = true;
+      return;
+    }
+
+    // Rotation controls: r + arrow
+    if (this._rotationMode) {
+      if (event.key === 'ArrowLeft') {
+        this.selectedObject.rotation.y += rotateStep;
+        this.transform.onTransformChange();
+      } else if (event.key === 'ArrowRight') {
+        this.selectedObject.rotation.y -= rotateStep;
+        this.transform.onTransformChange();
+      } else if (event.key === 'ArrowUp') {
+        this.selectedObject.rotation.x += rotateStep;
+        this.transform.onTransformChange();
+      } else if (event.key === 'ArrowDown') {
+        this.selectedObject.rotation.x -= rotateStep;
+        this.transform.onTransformChange();
       }
+      this._rotationMode = false;
+      return;
+    }
+
+    // Scale controls: s + up/down arrow
+    if (this._scaleMode) {
+      const scaleStep = 0.1;
+      if (event.key === 'ArrowUp') {
+        this.selectedObject.scale.multiplyScalar(1 + scaleStep);
+        this.transform.onTransformChange();
+      } else if (event.key === 'ArrowDown') {
+        this.selectedObject.scale.multiplyScalar(1 - scaleStep);
+        this.transform.onTransformChange();
+      }
+      this._scaleMode = false;
+      return;
+    }
+
+    // Move controls
+    if (event.key === 'ArrowUp') {
+      this.selectedObject.position.y += moveStep;
+      this.transform.onTransformChange();
+    } else if (event.key === 'ArrowDown') {
+      this.selectedObject.position.y -= moveStep;
+      this.transform.onTransformChange();
+    } else if (event.key === 'ArrowLeft') {
+      this.selectedObject.position.x -= moveStep;
+      this.transform.onTransformChange();
+    } else if (event.key === 'ArrowRight') {
+      this.selectedObject.position.x += moveStep;
+      this.transform.onTransformChange();
     }
   }
 

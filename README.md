@@ -97,6 +97,17 @@ npm run dev
 
 ---
 
+## Transformation
+
+Object transformations are handled through `THREE.TransformControls`.
+
+* Translation, rotation, and scaling are applied directly to the selected object
+* Transform updates modify the object’s world `position`, `rotation`, and `scale`
+* Changes are reflected immediately in the HUD
+* Transform data is synchronized back into the serialized scene state
+
+This ensures transformations affect both the visual representation and the underlying data model, allowing the scene to be reconstructed accurately after reload.
+
 ## Notes
 
 In this project I totally avoid abstractions such as React Three Fiber. All Three.js lifecycle management, rendering, interaction, and memory handling are implemented manually to maintain full control over the graphics pipeline.

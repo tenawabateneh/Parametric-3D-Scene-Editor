@@ -12,6 +12,7 @@ function App() {
     id: string;
     type: string;
     position: number[];
+    rotation?: number[];
   } | null>(null);
 
   useEffect(() => {
@@ -24,7 +25,21 @@ function App() {
       setSelectedObject(data);
     };
 
-    engine.onSceneChange = () => {
+    // Live update selectedObject position/rotation on transform
+    engine.transform.onTransformChange = () => {
+      const obj = engine.transform.controls.object;
+      if (obj) {
+        setSelectedObject((sel) =>
+          sel && sel.id === obj.userData.id
+            ? {
+                ...sel,
+                position: obj.position.toArray(),
+                rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z],
+              }
+            : sel
+        );
+      }
+      // Also update scene state and localStorage
       const state = engine.exportState();
       localStorage.setItem('scene', JSON.stringify(state));
     };
@@ -39,8 +54,8 @@ function App() {
     }
 
     return () => {
-        engine.dispose();
-        engineRef.current = null;
+      engine.dispose();
+      engineRef.current = null;
     };
   }, []);
 
@@ -66,5 +81,3 @@ function App() {
 }
 
 export default App;
-
-
